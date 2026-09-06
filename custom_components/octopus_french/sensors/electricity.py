@@ -17,6 +17,7 @@ from ..const import (
     ENERGY_KEY_TO_LABEL,
     LEDGER_TYPE_ELECTRICITY,
     TEMPO_SHORT_LABELS,
+    TWO_SEASON_COST_KEY_TO_LABEL,
 )
 from ..coordinator import OctopusFrenchDataUpdateCoordinator
 from ..utils import (
@@ -170,16 +171,49 @@ class OctopusElectricitySensor(
             statistics = (reading.get("metaData") or {}).get("statistics", [])
 
             for stat in statistics:
-                label = normalize_consumption_label(stat.get("label", ""))
+                raw_label = stat.get("label", "")
+                label = normalize_consumption_label(raw_label)
 
                 if key.startswith("energy_"):
                     expected_label = ENERGY_KEY_TO_LABEL.get(key)
                     value = stat.get("value")
 
-                    if value is not None and label == expected_label:
+                    if value is not None and (
+                        label == expected_label
+                        or (
+                            key == "energy_peak_hours"
+                            and label.startswith("HEURES_PLEINES_")
+                        )
+                        or (
+                            key == "energy_off_peak_hours"
+                            and label.startswith("HEURES_CREUSES_")
+                        )
+                    ):
                         total += float(value)
 
-                elif key in COST_KEY_TO_LABEL and label == COST_KEY_TO_LABEL[key]:
+                elif (
+                    key in TWO_SEASON_COST_KEY_TO_LABEL
+                    and raw_label == TWO_SEASON_COST_KEY_TO_LABEL[key]
+                ):
+                    amount = (stat.get("costInclTax") or {}).get("estimatedAmount")
+                    if amount is not None:
+                        total += float(amount) / 100
+                    else:
+                        value = stat.get("value")
+                        tariff_rate = self._get_tariff_rate()
+                        if value is not None and tariff_rate:
+                            total += float(value) * tariff_rate
+
+                elif key in COST_KEY_TO_LABEL and (
+                    label == COST_KEY_TO_LABEL[key]
+                    or (
+                        key == "cost_peak_hours" and label.startswith("HEURES_PLEINES_")
+                    )
+                    or (
+                        key == "cost_off_peak_hours"
+                        and label.startswith("HEURES_CREUSES_")
+                    )
+                ):
                     # Montant réel de l'API (centimes, au tarif du jour du
                     # relevé) ; fallback kWh x tarif actuel s'il est absent.
                     amount = (stat.get("costInclTax") or {}).get("estimatedAmount")
@@ -390,6 +424,27 @@ class OctopusElectricitySensor(
                         if hc_rate:
                             attributes["price_ht_eur_kwh"] = hc_rate.get("price_ht")
                             attributes["price_ttc_eur_kwh"] = hc_rate.get("price_ttc")
+
+                    elif key in {
+                        "rate_summer_peak_hours",
+                        "rate_summer_off_peak_hours",
+                        "rate_winter_peak_hours",
+                        "rate_winter_off_peak_hours",
+                    }:
+                        seasonal_key = {
+                            "rate_summer_peak_hours": "heures_pleines_ete",
+                            "rate_summer_off_peak_hours": "heures_creuses_ete",
+                            "rate_winter_peak_hours": "heures_pleines_hiver",
+                            "rate_winter_off_peak_hours": "heures_creuses_hiver",
+                        }[key]
+                        seasonal_rate = consumption.get(seasonal_key)
+                        if seasonal_rate:
+                            attributes["price_ht_eur_kwh"] = seasonal_rate.get(
+                                "price_ht"
+                            )
+                            attributes["price_ttc_eur_kwh"] = seasonal_rate.get(
+                                "price_ttc"
+                            )
 
                     elif key in _TEMPO_RATE_KEY_MAP:
                         rate = consumption.get(_TEMPO_RATE_KEY_MAP[key])

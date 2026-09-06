@@ -263,6 +263,25 @@ class TestExtractTariffsTempo:
         assert consumption["tempo_rouge_hc"]["price_ttc"] == pytest.approx(0.40)
         assert consumption["tempo_hiver_hc"]["price_ttc"] == pytest.approx(0.12)
 
+    def test_rates_map_two_season_aliases(self) -> None:
+        """Les codes HPHC deux saisons alimentent les clés HP/HC classiques."""
+        client = self._make_api_client()
+        consumption = client._extract_tariffs(
+            self._make_rates(
+                [
+                    (0.20, "HPB", ""),
+                    (0.10, "HCB", ""),
+                    (0.30, "HPH", ""),
+                    (0.15, "HCH", ""),
+                ]
+            )
+        )["consumption"]
+
+        assert consumption["heures_pleines_ete"]["price_ttc"] == pytest.approx(0.20)
+        assert consumption["heures_creuses_ete"]["price_ttc"] == pytest.approx(0.10)
+        assert consumption["heures_pleines_hiver"]["price_ttc"] == pytest.approx(0.30)
+        assert consumption["heures_creuses_hiver"]["price_ttc"] == pytest.approx(0.15)
+
     def test_rates_carry_temporal_class_description(self) -> None:
         """La description horaire de la classe est conservée sur le taux."""
         client = self._make_api_client()

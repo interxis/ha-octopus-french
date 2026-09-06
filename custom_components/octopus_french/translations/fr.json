@@ -149,6 +149,18 @@
           }
         }
       },
+      "cost_summer_peak_hours": {
+        "name": "Coût heures pleines été"
+      },
+      "cost_summer_off_peak_hours": {
+        "name": "Coût heures creuses été"
+      },
+      "cost_winter_peak_hours": {
+        "name": "Coût heures pleines hiver"
+      },
+      "cost_winter_off_peak_hours": {
+        "name": "Coût heures creuses hiver"
+      },
       "meter_index_base": {
         "name": "Index",
         "state_attributes": {
@@ -392,6 +404,18 @@
             "name": "Prix (TTC)"
           }
         }
+      },
+      "rate_summer_peak_hours": {
+        "name": "Tarif heures pleines été"
+      },
+      "rate_summer_off_peak_hours": {
+        "name": "Tarif heures creuses été"
+      },
+      "rate_winter_peak_hours": {
+        "name": "Tarif heures pleines hiver"
+      },
+      "rate_winter_off_peak_hours": {
+        "name": "Tarif heures creuses hiver"
       },
       "latest_reading": {
         "name": "Dernier relevé",

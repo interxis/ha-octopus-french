@@ -149,6 +149,18 @@
           }
         }
       },
+      "cost_summer_peak_hours": {
+        "name": "Summer peak hours cost"
+      },
+      "cost_summer_off_peak_hours": {
+        "name": "Summer off-peak hours cost"
+      },
+      "cost_winter_peak_hours": {
+        "name": "Winter peak hours cost"
+      },
+      "cost_winter_off_peak_hours": {
+        "name": "Winter off-peak hours cost"
+      },
       "meter_index_base": {
         "name": "Meter index",
         "state_attributes": {
@@ -392,6 +404,18 @@
             "name": "Price (incl. tax)"
           }
         }
+      },
+      "rate_summer_peak_hours": {
+        "name": "Summer peak hours rate"
+      },
+      "rate_summer_off_peak_hours": {
+        "name": "Summer off-peak hours rate"
+      },
+      "rate_winter_peak_hours": {
+        "name": "Winter peak hours rate"
+      },
+      "rate_winter_off_peak_hours": {
+        "name": "Winter off-peak hours rate"
       },
       "latest_reading": {
         "name": "Latest reading",
