@@ -50,6 +50,10 @@ TEMPO_TEMPORAL_CLASS_CODES: frozenset[str] = frozenset(
     {"HPP", "HCP", "HPHI", "HCHI", "HPE", "HCE"}
 )
 
+TWO_SEASON_TEMPORAL_CLASS_CODES: frozenset[str] = frozenset(
+    {"HPB", "HCB", "HPH", "HCH"}
+)
+
 TEMPO_CALENDAR_COLORS: frozenset[str] = frozenset({"ETE", "HIVER", "ROUGE"})
 
 # Clé de sensor energy_* → label de consommation renvoyé par l'API.
@@ -76,4 +80,11 @@ COST_KEY_TO_LABEL: dict[str, str] = {
     "cost_tempo_hiver_hc": "CONSUMPTION_OCTOFLEX_4_V4_HCHI_0.0_37.0",
     "cost_tempo_rouge_hp": "CONSUMPTION_OCTOFLEX_4_V4_HPP_0.0_37.0",
     "cost_tempo_rouge_hc": "CONSUMPTION_OCTOFLEX_4_V4_HCP_0.0_37.0",
+}
+
+TWO_SEASON_COST_KEY_TO_LABEL: dict[str, str] = {
+    "cost_summer_peak_hours": "CONSUMPTION_HPHC_2_SAISONS_HPB_6.0_7.0",
+    "cost_summer_off_peak_hours": "CONSUMPTION_HPHC_2_SAISONS_HCB_6.0_7.0",
+    "cost_winter_peak_hours": "CONSUMPTION_HPHC_2_SAISONS_HPH_6.0_7.0",
+    "cost_winter_off_peak_hours": "CONSUMPTION_HPHC_2_SAISONS_HCH_6.0_7.0",
 }

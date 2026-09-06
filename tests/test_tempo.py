@@ -263,6 +263,25 @@ class TestExtractTariffsTempo:
         assert consumption["tempo_rouge_hc"]["price_ttc"] == pytest.approx(0.40)
         assert consumption["tempo_hiver_hc"]["price_ttc"] == pytest.approx(0.12)
 
+    def test_rates_map_two_season_aliases(self) -> None:
+        """Les codes HPHC deux saisons alimentent les clés HP/HC classiques."""
+        client = self._make_api_client()
+        consumption = client._extract_tariffs(
+            self._make_rates(
+                [
+                    (0.20, "HPB", ""),
+                    (0.10, "HCB", ""),
+                    (0.30, "HPH", ""),
+                    (0.15, "HCH", ""),
+                ]
+            )
+        )["consumption"]
+
+        assert consumption["heures_pleines_ete"]["price_ttc"] == pytest.approx(0.20)
+        assert consumption["heures_creuses_ete"]["price_ttc"] == pytest.approx(0.10)
+        assert consumption["heures_pleines_hiver"]["price_ttc"] == pytest.approx(0.30)
+        assert consumption["heures_creuses_hiver"]["price_ttc"] == pytest.approx(0.15)
+
     def test_rates_carry_temporal_class_description(self) -> None:
         """La description horaire de la classe est conservée sur le taux."""
         client = self._make_api_client()
@@ -534,6 +553,46 @@ class TestElectricityIndexTempo:
         assert result is not None
         assert result["tariff_type"] == "HPHC"
         assert "tempo_color" not in result
+
+    @pytest.mark.asyncio
+    async def test_two_season_indexes_are_kept_separately(self) -> None:
+        """Les quatre index deux saisons ne s'ecrasent pas."""
+        client = OctopusFrenchApiClient.__new__(OctopusFrenchApiClient)
+        codes = {
+            "HPB": (1000, 1010),
+            "HCB": (2000, 2020),
+            "HPH": (3000, 3030),
+            "HCH": (4000, 4040),
+        }
+        response = {
+            "data": {
+                "electricityReading": {
+                    "edges": [
+                        {
+                            "node": {
+                                "temporalClass": {"code": code},
+                                "consumption": str(end - start),
+                                "indexStartValue": str(start),
+                                "indexEndValue": str(end),
+                                "periodStartAt": "2026-05-22T00:00:00+00:00",
+                                "periodEndAt": "2026-05-22T23:59:59+00:00",
+                            }
+                        }
+                        for code, (start, end) in codes.items()
+                    ]
+                }
+            }
+        }
+
+        with patch.object(client, "execute_with_auth", return_value=response):
+            result = await client.get_electricity_index("ACC123", "PRM456")
+
+        assert result is not None
+        assert result["tariff_type"] == "HPHC"
+        assert result["hp_ete"]["index_end"] == "1010"
+        assert result["hc_ete"]["index_end"] == "2020"
+        assert result["hp_hiver"]["index_end"] == "3030"
+        assert result["hc_hiver"]["index_end"] == "4040"
 
     def _make_index_response_with_date(self, temp_class: str, period_date: str) -> dict:
         """Construit une fausse réponse API avec une date de période explicite."""
