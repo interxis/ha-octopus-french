@@ -219,6 +219,42 @@ ELECTRICITY_INDEX_SENSORS: tuple[OctopusIndexSensorDescription, ...] = (
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         suggested_display_precision=0,
     ),
+    OctopusIndexSensorDescription(
+        key="meter_index_summer_peak_hours",
+        index_type="hp_ete",
+        icon="mdi:counter",
+        device_class=SensorDeviceClass.ENERGY,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        suggested_display_precision=0,
+    ),
+    OctopusIndexSensorDescription(
+        key="meter_index_summer_off_peak_hours",
+        index_type="hc_ete",
+        icon="mdi:counter",
+        device_class=SensorDeviceClass.ENERGY,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        suggested_display_precision=0,
+    ),
+    OctopusIndexSensorDescription(
+        key="meter_index_winter_peak_hours",
+        index_type="hp_hiver",
+        icon="mdi:counter",
+        device_class=SensorDeviceClass.ENERGY,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        suggested_display_precision=0,
+    ),
+    OctopusIndexSensorDescription(
+        key="meter_index_winter_off_peak_hours",
+        index_type="hc_hiver",
+        icon="mdi:counter",
+        device_class=SensorDeviceClass.ENERGY,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        suggested_display_precision=0,
+    ),
 )
 
 TEMPO_SENSORS: tuple[SensorEntityDescription, ...] = (

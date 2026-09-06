@@ -257,6 +257,18 @@
           }
         }
       },
+      "meter_index_summer_peak_hours": {
+        "name": "Summer peak hours index"
+      },
+      "meter_index_summer_off_peak_hours": {
+        "name": "Summer off-peak hours index"
+      },
+      "meter_index_winter_peak_hours": {
+        "name": "Winter peak hours index"
+      },
+      "meter_index_winter_off_peak_hours": {
+        "name": "Winter off-peak hours index"
+      },
       "contract": {
         "name": "Contract",
         "state_attributes": {

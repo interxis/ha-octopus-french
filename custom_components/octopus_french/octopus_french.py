@@ -1354,7 +1354,12 @@ class OctopusFrenchApiClient:
 
             elif effective_code in ("HPB", "HCB", "HPH", "HCH"):
                 tariff_type = "HPHC"
-                key = "hp" if effective_code.startswith("HP") else "hc"
+                key = {
+                    "HPB": "hp_ete",
+                    "HCB": "hc_ete",
+                    "HPH": "hp_hiver",
+                    "HCH": "hc_hiver",
+                }[effective_code]
                 index_data[key] = {
                     "consumption": node.get("consumption"),
                     "index_start": node.get("indexStartValue"),

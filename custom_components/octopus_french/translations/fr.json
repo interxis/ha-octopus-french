@@ -257,6 +257,18 @@
           }
         }
       },
+      "meter_index_summer_peak_hours": {
+        "name": "Index heures pleines été"
+      },
+      "meter_index_summer_off_peak_hours": {
+        "name": "Index heures creuses été"
+      },
+      "meter_index_winter_peak_hours": {
+        "name": "Index heures pleines hiver"
+      },
+      "meter_index_winter_off_peak_hours": {
+        "name": "Index heures creuses hiver"
+      },
       "contract": {
         "name": "Contrat",
         "state_attributes": {
