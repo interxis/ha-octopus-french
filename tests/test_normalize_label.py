@@ -67,6 +67,16 @@ _CONSUMPTION_MAPPING = {
             "CONSUMPTION_OCTOFLEX_4_V4_HCP_0.0_37.0",
             id="tempo_octoflex_hcp",
         ),
+        pytest.param(
+            "CONSUMPTION_HPHC_2_SAISONS_HCB_6.0_7.0",
+            "HEURES_CREUSES_ETE",
+            id="two_season_hcb",
+        ),
+        pytest.param(
+            "CONSUMPTION_HPHC_2_SAISONS_HPH_6.0_7.0",
+            "HEURES_PLEINES_HIVER",
+            id="two_season_hph",
+        ),
         # Labels Tempo courts → inchangés (TEMPO_SHORT_LABELS).
         pytest.param("TEMPO_ETE_HP", "TEMPO_ETE_HP", id="tempo_court_ete_hp"),
         pytest.param("TEMPO_ROUGE_HC", "TEMPO_ROUGE_HC", id="tempo_court_rouge_hc"),

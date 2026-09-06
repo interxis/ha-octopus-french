@@ -21,7 +21,12 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util import dt as dt_util
 
-from .const import COST_KEY_TO_LABEL, DOMAIN, ENERGY_KEY_TO_LABEL
+from .const import (
+    COST_KEY_TO_LABEL,
+    DOMAIN,
+    ENERGY_KEY_TO_LABEL,
+    TWO_SEASON_COST_KEY_TO_LABEL,
+)
 from .utils import (
     gas_daily_values,
     get_tariff_rate_for_key,
@@ -35,7 +40,10 @@ if TYPE_CHECKING:
 _LOGGER = logging.getLogger(__name__)
 
 _LABEL_TO_ENERGY_KEY = {label: key for key, label in ENERGY_KEY_TO_LABEL.items()}
-_LABEL_TO_COST_KEY = {label: key for key, label in COST_KEY_TO_LABEL.items()}
+_LABEL_TO_COST_KEY = {
+    **{label: key for key, label in COST_KEY_TO_LABEL.items()},
+    **{label: key for key, label in TWO_SEASON_COST_KEY_TO_LABEL.items()},
+}
 
 # Nombre de jours détaillés dans le journal, pour ne pas le noyer.
 _LOGGED_DAYS = 10
@@ -118,7 +126,8 @@ class OctopusStatisticsImporter:
                 continue
 
             for stat in (reading.get("metaData") or {}).get("statistics", []):
-                label = normalize_consumption_label(stat.get("label", ""))
+                raw_label = stat.get("label", "")
+                label = normalize_consumption_label(raw_label)
                 value = stat.get("value")
 
                 # Un jour mesuré à 0 est une donnée ; un relevé sans valeur n'en
@@ -126,10 +135,21 @@ class OctopusStatisticsImporter:
                 # basculer l'import sur son cumul incrémental au lieu de
                 # recalculer les sommes (même défaut que le gaz, issue #79).
                 energy_key = _LABEL_TO_ENERGY_KEY.get(label)
+                if energy_key is None and label.startswith("HEURES_PLEINES_"):
+                    energy_key = "energy_peak_hours"
+                elif energy_key is None and label.startswith("HEURES_CREUSES_"):
+                    energy_key = "energy_off_peak_hours"
                 if energy_key is not None and value is not None:
                     daily_values.setdefault(energy_key, {})[day] = float(value)
 
-                if (cost_key := _LABEL_TO_COST_KEY.get(label)) is not None:
+                cost_key = _LABEL_TO_COST_KEY.get(
+                    raw_label, _LABEL_TO_COST_KEY.get(label)
+                )
+                if cost_key is None and label.startswith("HEURES_PLEINES_"):
+                    cost_key = "cost_peak_hours"
+                elif cost_key is None and label.startswith("HEURES_CREUSES_"):
+                    cost_key = "cost_off_peak_hours"
+                if cost_key is not None:
                     cost = self._compute_cost(data, prm_id, cost_key, stat, rates)
                     if cost is not None:
                         daily_values.setdefault(cost_key, {})[day] = cost

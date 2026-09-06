@@ -45,6 +45,13 @@ _LABEL_SEGMENT_TO_CANONICAL: dict[str, str] = {
     "HC": "HEURES_CREUSES",
 }
 
+_TWO_SEASON_LABEL_ALIASES: dict[str, str] = {
+    "HPB": "HEURES_PLEINES_ETE",
+    "HCB": "HEURES_CREUSES_ETE",
+    "HPH": "HEURES_PLEINES_HIVER",
+    "HCH": "HEURES_CREUSES_HIVER",
+}
+
 # Labels déjà signalés comme non reconnus, pour ne pas répéter l'avertissement
 # à chaque relevé de chaque rafraîchissement.
 _UNKNOWN_LABELS_WARNED: set[str] = set()
@@ -353,6 +360,9 @@ def normalize_consumption_label(label: str) -> str:
 
     if label.startswith("CONSUMPTION_"):
         segments = set(label.split("_"))
+        for temporal_code, canonical in _TWO_SEASON_LABEL_ALIASES.items():
+            if temporal_code in segments:
+                return canonical
         if segments & TEMPO_TEMPORAL_CLASS_CODES:
             return label
         for segment, canonical in _LABEL_SEGMENT_TO_CANONICAL.items():
@@ -406,6 +416,14 @@ _RATE_KEY_TO_CONSUMPTION_KEY: dict[str, str] = {
     "cost_peak_hours": "heures_pleines",
     "rate_off_peak_hours": "heures_creuses",
     "cost_off_peak_hours": "heures_creuses",
+    "rate_summer_peak_hours": "heures_pleines_ete",
+    "cost_summer_peak_hours": "heures_pleines_ete",
+    "rate_summer_off_peak_hours": "heures_creuses_ete",
+    "cost_summer_off_peak_hours": "heures_creuses_ete",
+    "rate_winter_peak_hours": "heures_pleines_hiver",
+    "cost_winter_peak_hours": "heures_pleines_hiver",
+    "rate_winter_off_peak_hours": "heures_creuses_hiver",
+    "cost_winter_off_peak_hours": "heures_creuses_hiver",
     "rate_tempo_ete_hp": "tempo_ete_hp",
     "cost_tempo_ete_hp": "tempo_ete_hp",
     "rate_tempo_ete_hc": "tempo_ete_hc",
