@@ -153,7 +153,9 @@ async def async_setup_entry(
                     continue
 
                 if (index_tariff_type == "BASE" and index_type == "base") or (
-                    index_tariff_type == "HPHC" and index_type in ["hp", "hc"]
+                    index_tariff_type == "HPHC"
+                    and index_type
+                    in ["hp", "hc", "hp_ete", "hc_ete", "hp_hiver", "hc_hiver"]
                 ):
                     entities.append(
                         OctopusElectricityIndexSensor(coordinator, prm_id, index_config)
